@@ -159,10 +159,11 @@ public class PopMenu {
         if (viewGroup == null) return;
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            View view = viewGroup.getChildAt(i);
-            animateViewDirection(view, screenHeight, tension, friction);
+            View view = viewGroup.getChildAt(i); //这时的getY(), getTop()全是0
+            animateViewDirection(view, screenHeight, 0, tension, friction);
         }
     }
+    // facebook-rebound可以用0作finalPosition， 来表示当前位置。 但support SpringAnimation就不行，得明确下，这个就更麻烦了
 
     /**
      * hide sub menus with animates
@@ -187,25 +188,25 @@ public class PopMenu {
      * @param tension  拉力系数
      * @param friction 摩擦力系数
      */
-    private void animateViewDirection(final View v, float from, double tension, double friction) {
-//        Spring spring = mSpringSystem.createSpring();
-//        spring.setCurrentValue(from);
-//        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
-//        spring.addListener(new SimpleSpringListener() {
-//            @Override
-//            public void onSpringUpdate(Spring spring) {
-//                v.setTranslationY((float) spring.getCurrentValue());
-//            }
-//        });
-//        spring.setEndValue(0);
+    private void animateViewDirection(final View v, float from, float to, double tension, double friction) {
+        Spring spring = mSpringSystem.createSpring();
+        spring.setCurrentValue(from);
+        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
+        spring.addListener(new SimpleSpringListener() {
+            @Override
+            public void onSpringUpdate(Spring spring) {
+                v.setTranslationY((float) spring.getCurrentValue());
+            }
+        });
+        spring.setEndValue(0);
 
 
-        SpringForce springForce = new SpringForce(0)
-                .setStiffness(SpringForce.STIFFNESS_MEDIUM)
-                .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
-        SpringAnimation springAnimation = new SpringAnimation(v, SpringAnimation.Y);
-        springAnimation.setSpring(springForce);
-        springAnimation.start();
+//        SpringForce springForce = new SpringForce(0)
+//                .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+//                .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
+//        SpringAnimation springAnimation = new SpringAnimation(v, SpringAnimation.Y);
+//        springAnimation.setSpring(springForce);
+//        springAnimation.start();
 
     }
 
