@@ -189,24 +189,25 @@ public class PopMenu {
      * @param friction 摩擦力系数
      */
     private void animateViewDirection(final View v, float from, float to, double tension, double friction) {
-        Spring spring = mSpringSystem.createSpring();
-        spring.setCurrentValue(from);
-        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
-        spring.addListener(new SimpleSpringListener() {
-            @Override
-            public void onSpringUpdate(Spring spring) {
-                v.setTranslationY((float) spring.getCurrentValue());
-            }
-        });
-        spring.setEndValue(0);
+//        Spring spring = mSpringSystem.createSpring();
+//        spring.setCurrentValue(from);
+//        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
+//        spring.addListener(new SimpleSpringListener() {
+//            @Override
+//            public void onSpringUpdate(Spring spring) {
+//                v.setTranslationY((float) spring.getCurrentValue());
+//            }
+//        });
+//        spring.setEndValue(0);
 
 
-//        SpringForce springForce = new SpringForce(0)
-//                .setStiffness(SpringForce.STIFFNESS_MEDIUM)
-//                .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
-//        SpringAnimation springAnimation = new SpringAnimation(v, SpringAnimation.Y);
-//        springAnimation.setSpring(springForce);
-//        springAnimation.start();
+        SpringForce springForce = new SpringForce(0)
+                .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+                .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
+        SpringAnimation springAnimation = new SpringAnimation(v, SpringAnimation.TRANSLATION_Y);
+        springAnimation.setSpring(springForce);
+        springAnimation.setStartValue(from); //finalPostion在SpringForce中设置， startPostion则在SpringAnimation中设置
+        springAnimation.start();
 
     }
 
