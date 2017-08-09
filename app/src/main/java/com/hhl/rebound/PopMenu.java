@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.animation.SpringAnimation;
+import android.support.animation.SpringForce;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -47,16 +49,16 @@ public class PopMenu {
      * 显示菜单
      */
     public void show() {
-        buildAnimateGridLayout();
+        buildAnimateGridLayout(); // just decorView adding all the sub menu items. (bg is f0ffffff)
 
-        if (animateLayout.getParent() != null) {
-            ViewGroup viewGroup = (ViewGroup) animateLayout.getParent();
-            viewGroup.removeView(animateLayout);
+        if (flayAnimateLayout.getParent() != null) {
+            ViewGroup viewGroup = (ViewGroup) flayAnimateLayout.getParent();
+            viewGroup.removeView(flayAnimateLayout);
         }
 
         ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         ViewGroup contentView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        contentView.addView(animateLayout);
+        contentView.addView(flayAnimateLayout);
 
         //执行显示动画
         showSubMenus(gridLayout);
@@ -75,7 +77,7 @@ public class PopMenu {
                 public void onAnimationEnd(Animator animation) {
                     ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
                     ViewGroup contentView = (ViewGroup) decorView.findViewById(android.R.id.content);
-                    contentView.removeView(animateLayout);
+                    contentView.removeView(flayAnimateLayout);
                 }
             });
             isShowing = false;
@@ -90,7 +92,7 @@ public class PopMenu {
      * 构建动画布局
      */
     private void buildAnimateGridLayout() {
-        animateLayout = new FrameLayout(activity);
+        flayAnimateLayout = new FrameLayout(activity);
 
         gridLayout = new GridLayout(activity);
         gridLayout.setColumnCount(columnCount);
@@ -131,12 +133,12 @@ public class PopMenu {
             gridLayout.addView(subView, lp);
         }
 
-        animateLayout.addView(gridLayout);
+        flayAnimateLayout.addView(gridLayout);
 
-        closeIv = new ImageView(activity);
-        closeIv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        closeIv.setImageResource(R.drawable.tabbar_compose_background_icon_close);
-        closeIv.setOnClickListener(new View.OnClickListener() {
+        ivClose = new ImageView(activity);
+        ivClose.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        ivClose.setImageResource(R.drawable.tabbar_compose_background_icon_close);
+        ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hide();
@@ -145,7 +147,7 @@ public class PopMenu {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         layoutParams.bottomMargin = dp2px(activity, 25);
-        animateLayout.addView(closeIv, layoutParams);
+        flayAnimateLayout.addView(ivClose, layoutParams);
     }
 
     /**
@@ -158,7 +160,7 @@ public class PopMenu {
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View view = viewGroup.getChildAt(i);
-            animateViewDirection(view, screenHeight, 0, tension, friction);
+            animateViewDirection(view, screenHeight, tension, friction);
         }
     }
 
@@ -182,25 +184,32 @@ public class PopMenu {
      *
      * @param v        动画View
      * @param from
-     * @param to
      * @param tension  拉力系数
      * @param friction 摩擦力系数
      */
-    private void animateViewDirection(final View v, float from, float to, double tension, double friction) {
-        Spring spring = mSpringSystem.createSpring();
-        spring.setCurrentValue(from);
-        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
-        spring.addListener(new SimpleSpringListener() {
-            @Override
-            public void onSpringUpdate(Spring spring) {
-                v.setTranslationY((float) spring.getCurrentValue());
-            }
-        });
-        spring.setEndValue(to);
+    private void animateViewDirection(final View v, float from, double tension, double friction) {
+//        Spring spring = mSpringSystem.createSpring();
+//        spring.setCurrentValue(from);
+//        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
+//        spring.addListener(new SimpleSpringListener() {
+//            @Override
+//            public void onSpringUpdate(Spring spring) {
+//                v.setTranslationY((float) spring.getCurrentValue());
+//            }
+//        });
+//        spring.setEndValue(0);
+
+
+        SpringForce springForce = new SpringForce(0)
+                .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+                .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
+        SpringAnimation springAnimation = new SpringAnimation(v, SpringAnimation.Y);
+        springAnimation.setSpring(springForce);
+        springAnimation.start();
+
     }
 
     public static class Builder {
-
         private Activity activity;
         private int columnCount = DEFAULT_COLUMN_COUNT;
         private List<PopMenuItem> itemList = new ArrayList<>();
@@ -277,9 +286,9 @@ public class PopMenu {
     private Activity activity;
     private int columnCount;
     private List<PopMenuItem> menuItems = new ArrayList<>();
-    private FrameLayout animateLayout;
+    private FrameLayout flayAnimateLayout;
     private GridLayout gridLayout;
-    private ImageView closeIv;
+    private ImageView ivClose;
     private int duration;
     private double tension, friction;
     private int horizontalPadding, verticalPadding;
