@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.hhl.rebound"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -24,6 +24,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.facebook.rebound:rebound:0.3.8'
     compile 'com.android.support:gridlayout-v7:25.3.1'
+    compile "com.android.support:support-dynamic-animation:25.3.1"
+    compile 'com.facebook.rebound:rebound:0.3.8'
 }
