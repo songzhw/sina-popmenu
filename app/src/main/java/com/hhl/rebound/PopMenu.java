@@ -189,18 +189,6 @@ public class PopMenu {
      * @param friction 摩擦力系数
      */
     private void animateViewDirection(final View v, float from, float to, double tension, double friction) {
-//        Spring spring = mSpringSystem.createSpring();
-//        spring.setCurrentValue(from);
-//        spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction));
-//        spring.addListener(new SimpleSpringListener() {
-//            @Override
-//            public void onSpringUpdate(Spring spring) {
-//                v.setTranslationY((float) spring.getCurrentValue());
-//            }
-//        });
-//        spring.setEndValue(0);
-
-
         SpringForce springForce = new SpringForce(0)
                 .setStiffness(SpringForce.STIFFNESS_MEDIUM)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY);
@@ -210,6 +198,8 @@ public class PopMenu {
         springAnimation.start();
 
     }
+
+
 
     public static class Builder {
         private Activity activity;
@@ -297,5 +287,4 @@ public class PopMenu {
     private int screenWidth, screenHeight;
     private boolean isShowing = false;
     private PopMenuItemListener popMenuItemListener;
-    private SpringSystem mSpringSystem  = SpringSystem.create();
 }
